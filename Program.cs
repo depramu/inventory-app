@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
      "http://127.0.0.1:5500",
-     "https://inventory-app.netlify.app"
+     "https://inventory-demoapp.netlify.app"
  )
  .AllowAnyHeader()
  .AllowAnyMethod();
@@ -80,12 +80,8 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
@@ -95,4 +91,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}");
