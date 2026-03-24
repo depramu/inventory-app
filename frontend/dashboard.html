@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory App - Dashboard</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --text: #101828;
+      --muted: #475467;
+      --line: #eaecf0;
+      --line-strong: #d0d5dd;
+      --primary: #175cd3;
+      --primary-hover: #1849a9;
+      --danger: #b42318;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .layout {
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      overflow-y: auto;
+      background: #0f172a;
+      color: #d0d5dd;
+      border-right: 1px solid #1f2937;
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      padding: 8px 10px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      width: 100%;
+      text-align: left;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #cbd5e1;
+      background: transparent;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav button:hover {
+      background: #111f39;
+      color: #f8fafc;
+    }
+
+    .nav button.active {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 10px;
+      border-top: 1px solid #1f2937;
+    }
+
+    .sidebar-footer .btn-danger {
+      width: 100%;
+    }
+
+    .app-shell {
+      margin-left: 260px;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .topbar-meta {
+      font-size: 12px;
+      color: #667085;
+      text-align: right;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .col-12 { grid-column: span 12; }
+    .col-6 { grid-column: span 6; }
+    .col-4 { grid-column: span 4; }
+    .col-8 { grid-column: span 8; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+    }
+
+    .section-subtitle {
+      margin: 4px 0 0;
+      color: #667085;
+      font-size: 12px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .field-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      border-color: #84caff;
+      box-shadow: 0 0 0 4px rgba(23, 92, 211, 0.12);
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background-color .15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-secondary {
+      background: #eef4ff;
+      color: #1d4ed8;
+      border: 1px solid #c7d7fe;
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: #344054;
+      border: 1px solid var(--line-strong);
+    }
+
+    .btn-danger {
+      background: #fef3f2;
+      color: var(--danger);
+      border: 1px solid #fecdca;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .table-actions button {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .stock-high {
+      background: #ecfdf3;
+      color: #027a48;
+      border-color: #abefc6;
+    }
+
+    .stock-medium {
+      background: #fffaeb;
+      color: #b54708;
+      border-color: #fedf89;
+    }
+
+    .stock-low {
+      background: #fef3f2;
+      color: #b42318;
+      border-color: #fecdca;
+    }
+
+    .table-money {
+      font-weight: 700;
+      color: #175cd3;
+    }
+
+    .transaction-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-item {
+      border: 1px solid var(--line);
+      background: #fcfcfd;
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .summary-item .label {
+      color: #667085;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .summary-item .value {
+      font-size: 17px;
+      font-weight: 700;
+      color: #101828;
+    }
+
+    .filter-bar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 180px repeat(3, auto);
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .list-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .list-table th,
+    .list-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .list-table th {
+      color: var(--muted);
+      font-weight: 600;
+      background: #fafbff;
+    }
+
+    .empty-state {
+      color: #667085;
+      font-size: 13px;
+      padding: 8px 0;
+    }
+
+    .message {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #475467;
+      min-height: 18px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kpi-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fcfcfd;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: #667085;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #101828;
+    }
+
+    .widget-title {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .activity-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .activity-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fcfcfd;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .chart-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    #overviewChart {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+
+    .chart-caption {
+      margin-top: 8px;
+      color: #667085;
+      font-size: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid #1f2937;
+      }
+
+      .app-shell {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .col-6, .col-4, .col-8 { grid-column: span 12; }
+      .field-row { grid-template-columns: 1fr; }
+      .filter-bar { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .transaction-summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>Inventory SaaS</h1>
+      <p>Enterprise Control Panel</p>
+    </div>
+    <nav class="nav">
+      <button class="active" data-section-target="overviewSection" onclick="setActiveSection('overviewSection', this)">Overview</button>
+      <button data-section-target="productSection" onclick="setActiveSection('productSection', this)">Products</button>
+      <button data-section-target="transactionSection" onclick="setActiveSection('transactionSection', this)">Transactions</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-danger" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="app-shell">
+    <div class="topbar">
+      <div>
+        <h2>Inventory Dashboard</h2>
+        <p>Monitoring stok, penjualan, dan aktivitas transaksi.</p>
+      </div>
+      <div class="topbar-meta">
+        <div>Workspace: Production View</div>
+        <div id="lastSync">Last sync: -</div>
+      </div>
+    </div>
+
+    <section id="overviewSection" class="section active">
+      <div class="grid">
+        <div class="card col-12">
+          <h3>Key Performance Indicators</h3>
+          <div class="kpi-grid" id="kpiCards"></div>
+        </div>
+        <div class="card col-12">
+          <h3>Statistik Dashboard (7 Hari)</h3>
+          <div class="chart-wrap">
+            <canvas id="overviewChart"></canvas>
+          </div>
+          <p class="chart-caption">Tren total nominal transaksi harian dalam 7 hari terakhir.</p>
+        </div>
+        <div class="card col-6">
+          <h3 class="widget-title">Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="btn-secondary" onclick="openProductModule()">Tambah Produk</button>
+            <button class="btn-secondary" onclick="openTransactionModule()">Buat Transaksi</button>
+            <button class="btn-ghost" onclick="refreshAllData()">Refresh Data</button>
+          </div>
+        </div>
+        <div class="card col-6">
+          <h3 class="widget-title">Recent Activity</h3>
+          <ul class="activity-list" id="recentActivity"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="productSection" class="section">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="section-head">
+            <div>
+              <h3>Tambah Produk</h3>
+              <p class="section-subtitle">Buat item produk baru untuk inventori.</p>
+            </div>
+          </div>
+          <div class="field-row">
+            <input id="name" placeholder="Nama produk">
+            <input id="stock" type="number" placeholder="Stock">
+            <input id="price" type="number" placeholder="Harga">
+          </div>
+          <button class="btn-primary" onclick="addProduct()">Simpan Produk</button>
+          <div class="message" id="productMessage"></div>
+        </div>
+
+        <div class="card col-12">
+          <div class="section-head">
+            <div>
+              <h3>Daftar Produk</h3>
+              <p class="section-subtitle">Kelola, cari, dan monitor status stok produk.</p>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input id="searchProduct" placeholder="Cari nama produk...">
+            <select id="sortProduct">
+              <option value="name-asc">Sort Nama (A-Z)</option>
+              <option value="name-desc">Sort Nama (Z-A)</option>
+              <option value="price-asc">Sort Harga (Termurah)</option>
+              <option value="price-desc">Sort Harga (Termahal)</option>
+              <option value="stock-asc">Sort Stock (Rendah-Tinggi)</option>
+              <option value="stock-desc">Sort Stock (Tinggi-Rendah)</option>
+            </select>
+            <button class="btn-secondary" onclick="searchProducts()">Search</button>
+            <button class="btn-secondary" onclick="sortProducts()">Sorted</button>
+            <button class="btn-ghost" onclick="loadLowStockProducts()">Low Stock</button>
+          </div>
+          <div id="products"></div>
+          <div class="message" id="productListMessage"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="transactionSection" class="section">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="section-head">
+            <div>
+              <h3>Transaksi</h3>
+              <p class="section-subtitle">Buat transaksi pembelian berdasarkan stok aktif.</p>
+            </div>
+          </div>
+          <div class="transaction-summary" id="transactionSummary"></div>
+          <div class="field-stack">
+            <select id="productSelect"></select>
+            <input id="qty" type="number" placeholder="Quantity">
+          </div>
+          <button class="btn-primary" onclick="createTransaction()">Proses Transaksi</button>
+          <div class="message" id="transactionMessage"></div>
+        </div>
+
+        <div class="card col-12">
+          <div class="section-head">
+            <div>
+              <h3>Riwayat Transaksi</h3>
+              <p class="section-subtitle">Histori transaksi terbaru untuk audit aktivitas.</p>
+            </div>
+          </div>
+          <div id="transactions"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+  initNavigation();
+  loadDashboard();
+  loadProducts();
+  loadProductOptions();
+  loadTransactions();
+</script>
+
+</body>
+</html>

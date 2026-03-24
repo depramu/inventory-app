@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory App - Sign In</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --text-primary: #101828;
+      --text-secondary: #475467;
+      --primary: #175cd3;
+      --primary-hover: #1849a9;
+      --border: #d0d5dd;
+      --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: radial-gradient(circle at top right, #dbeafe 0%, var(--bg) 35%, var(--bg) 100%);
+      color: var(--text-primary);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-shell {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid #eaecf0;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .login-header {
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid #eaecf0;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .form {
+      padding: 20px 24px 24px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .auth-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .auth-switch button {
+      margin: 0;
+      padding: 9px 10px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: #f8f9fc;
+      color: #344054;
+      font-weight: 600;
+    }
+
+    .auth-switch button.active {
+      background: #e7f0ff;
+      border-color: #b2ccff;
+      color: #1d4ed8;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #344054;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: #84caff;
+      box-shadow: 0 0 0 4px rgba(23, 92, 211, 0.12);
+    }
+
+    button {
+      margin-top: 4px;
+      width: 100%;
+      padding: 11px 12px;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color .15s ease;
+    }
+
+    button:hover { background: var(--primary-hover); }
+
+    .footer-note {
+      font-size: 12px;
+      color: #667085;
+      text-align: center;
+      padding: 0 24px 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      margin-top: 2px;
+      font-size: 13px;
+      min-height: 18px;
+      color: #475467;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-shell">
+  <div class="login-header">
+    <h2 class="title">Inventory Management</h2>
+    <p class="subtitle" id="authSubtitle">Masuk untuk mengelola produk dan transaksi.</p>
+  </div>
+  <div class="form">
+    <div class="auth-switch">
+      <button id="loginTab" class="active" type="button" onclick="setAuthMode('login')">Sign In</button>
+      <button id="registerTab" type="button" onclick="setAuthMode('register')">Register</button>
+    </div>
+    <div class="field hidden" id="nameField">
+      <label for="nameRegister">Nama</label>
+      <input id="nameRegister" type="text" placeholder="Nama lengkap">
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="nama@perusahaan.com">
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Masukkan password">
+    </div>
+    <button id="authActionButton" onclick="login()">Sign In</button>
+    <div class="message" id="authMessage"></div>
+  </div>
+  <div class="footer-note">Secure internal access</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
